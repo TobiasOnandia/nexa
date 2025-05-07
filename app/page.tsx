@@ -1,26 +1,17 @@
 "use client";
 import { useActionState } from "react";
+import { login, logoutAction } from "@/app/actions/auth";
 
 export default function Home() {
   const [, formAction, isLoading] = useActionState(
     async (_: void | null, formData: FormData) => {
-      const { email, password } = Object.fromEntries(formData.entries());
-      console.log(email, password);
+      const response = await login(formData);
 
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
+      if (!response.success) {
         throw new Error("Failed to login user", { cause: response });
       }
 
-      const data = await response.json();
-      console.log(data);
+      console.log(response);
     },
     null
   );
@@ -40,6 +31,9 @@ export default function Home() {
         />
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Login"}
+        </button>
+        <button type="button" onClick={() => logoutAction()}>
+          Logout
         </button>
       </form>
     </div>
