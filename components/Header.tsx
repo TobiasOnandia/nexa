@@ -39,7 +39,7 @@ export default function Header() {
   });
 
   return (
-    <header className="bg-[hsl(220,15%,12%)] flex items-center justify-between h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[hsl(0,0%,95%)] sticky top-0 z-50 shadow-lg">
+    <header className="bg-[hsl(220,15%,12%)] flex md:items-center justify-between h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[hsl(0,0%,95%)] sticky top-0 z-50 shadow-lg">
       <section className="flex items-center gap-6">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
