@@ -70,7 +70,11 @@ export async function login(formData: FormData) {
       return { success: false, message: "Invalid credentials" };
     }
 
-    const token = await new SignJWT({ userId: user.id })
+    const token = await new SignJWT({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("1h")

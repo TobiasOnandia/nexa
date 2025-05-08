@@ -1,14 +1,31 @@
 "use client";
 
+import { logoutAction } from "@/app/actions/auth";
 import { fetchCurrentUser } from "@/utils/auth/fetchCurrentUser";
 import { useQuery } from "@tanstack/react-query";
 import { Bell, Menu, Moon, Search, Sun } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
+  // Efecto para cerrar el menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const {
     data: currentUser,
     isLoading,
@@ -19,8 +36,6 @@ export default function Header() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-
-  console.log(currentUser);
 
   return (
     <header className="bg-[hsl(220,15%,12%)] text-[hsl(0,0%,95%)] sticky top-0 z-50 shadow-lg">
@@ -59,7 +74,6 @@ export default function Header() {
               )
             )}
           </nav>
-
           {/* Acciones derecha */}
           <div className="flex items-center gap-4">
             {/* Buscador */}
@@ -85,8 +99,42 @@ export default function Header() {
             </button>
 
             {/* Perfil */}
-            <div className="w-9 h-9 rounded-full bg-[hsl(250,70%,60%)] flex items-center justify-center cursor-pointer">
-              <span className="font-satoshi-bold text-sm">JP</span>
+            <div className="relative" ref={profileMenuRef}>
+              <div
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                className="w-9 h-9 rounded-full bg-[hsl(250,70%,60%)] flex items-center justify-center cursor-pointer hover:bg-[hsl(250,70%,50%)] transition-colors"
+              >
+                <span className="font-satoshi-bold text-sm">
+                  {currentUser?.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+
+              {isProfileMenuOpen && (
+                <div className="absolute right-0 top-10 w-48 bg-[hsl(220,15%,20%)] rounded-lg shadow-xl py-2">
+                  <div className="flex flex-col gap-1">
+                    <Link
+                      href="/profile"
+                      className="px-4 py-2 text-sm font-satoshi-medium text-gray-300 hover:bg-[hsl(220,15%,25%)]"
+                    >
+                      Perfil
+                    </Link>
+
+                    <Link
+                      href="/settings"
+                      className="px-4 py-2 text-sm font-satoshi-medium text-gray-300 hover:bg-[hsl(220,15%,25%)]"
+                    >
+                      Configuración
+                    </Link>
+
+                    <button
+                      onClick={() => logoutAction()}
+                      className="px-4 py-2 text-sm cursor-pointer font-satoshi-medium text-red-400 hover:bg-red-500/10 text-left"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
