@@ -18,7 +18,7 @@ import { AlertCircle, Star } from "lucide-react";
 import {
   fetchCoinMarket, // Asumo que esta trae la lista de coins (ej. /coins/markets)
   fetchCoinMarketHistory, // Asumo que esta trae datos históricos de UNA coin (ej. /coins/{id}/market_chart)
-} from "@/app/actions/fetchCoinMarket"; // Asumo que ambas funciones están en este archivo o son Server Actions
+} from "@/app/actions/coinMarket"; // Asumo que ambas funciones están en este archivo o son Server Actions
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns"; // Para formatear fechas (pnpm add date-fns)
