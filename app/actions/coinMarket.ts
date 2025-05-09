@@ -17,15 +17,14 @@ export async function fetchCoinMarket() {
     try {
       cachedData = await redisClient.get(cacheKey);
       if (cachedData) {
+        console.log("Coin market data found in cache");
         return JSON.parse(cachedData);
       }
     } catch (redisError) {
-      console.error("Error fetching coin market data:", redisError);
-      return null;
+      console.log("Error fetching coin market data:", redisError);
     }
   } else {
-    console.error("Redis client is not initialized");
-    return null;
+    console.log("Redis client is not initialized");
   }
 
   try {
@@ -55,20 +54,17 @@ export async function fetchCoinMarket() {
           cacheExpirySeconds
         );
       } catch (redisError) {
-        console.error("Error caching coin market data:", redisError);
+        console.log("Error caching coin market data:", redisError);
       }
     } else if (redisClient) {
-      console.error(`Not caching empty data for ${cacheKey}`);
+      console.log(`Not caching empty data for ${cacheKey}`);
     } else {
-      console.error("Redis client is not initialized");
+      console.log("Redis client is not initialized");
     }
-
-    console.log(data);
 
     return data;
   } catch (error) {
-    console.error("Error fetching coin market data:", error);
-    return null;
+    console.log("Error fetching coin market data:", error);
   }
 }
 
@@ -85,7 +81,6 @@ export async function fetchCoinMarketHistory() {
     });
 
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching coin market data:", error);

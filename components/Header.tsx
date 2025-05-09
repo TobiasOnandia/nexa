@@ -3,7 +3,7 @@
 import { logoutAction } from "@/app/actions/auth";
 import { fetchCurrentUser } from "@/utils/auth/fetchCurrentUser";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, Menu, Moon, Search, Sun } from "lucide-react";
+import { Bell, Menu, Moon, Search, Sun, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { HeaderMobile } from "@/components/mobile/Header.mobile";
@@ -36,6 +36,14 @@ export default function Header() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <header className="bg-[hsl(220,15%,12%)] flex md:items-center justify-between h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-[hsl(0,0%,95%)] sticky top-0 z-50 ">
@@ -95,36 +103,47 @@ export default function Header() {
         </button>
 
         {/* Perfil */}
-        <section className="relative" ref={profileMenuRef}>
-          <p
-            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-            className="w-9 h-9 rounded-full bg-[hsl(250,70%,60%)] flex items-center justify-center cursor-pointer hover:bg-[hsl(250,70%,50%)] transition-colors"
+        {currentUser.userId !== null && (
+          <section className="relative" ref={profileMenuRef}>
+            <p
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              className="w-9 h-9 rounded-full bg-[hsl(250,70%,60%)] flex items-center justify-center cursor-pointer hover:bg-[hsl(250,70%,50%)] transition-colors"
+            >
+              <span className="font-satoshi-bold text-sm">
+                {/* {currentUser?.name.charAt(0).toUpperCase()} */}
+              </span>
+            </p>
+
+            {isProfileMenuOpen && (
+              <ul className="absolute flex flex-col gap-1 right-0 top-10 w-48 bg-[hsl(220,15%,20%)] rounded-lg shadow-xl py-2">
+                <li className="w-full px-4 cursor-pointer py-2  text-sm font-satoshi-medium text-gray-300 font-semibold hover:bg-[hsl(220,15%,25%)]">
+                  <Link href="/profile" className="">
+                    Perfil
+                  </Link>
+                </li>
+
+                <li className="w-full px-4 cursor-pointer py-2  text-sm font-satoshi-medium text-gray-300 font-semibold hover:bg-[hsl(220,15%,25%)]">
+                  <Link href="/settings" className="">
+                    Configuración
+                  </Link>
+                </li>
+
+                <li className="w-full px-4  py-2  text-sm cursor-pointer text-red-400 hover:bg-red-500/10 text-left font-semibold ">
+                  <button onClick={() => logoutAction()}>Cerrar sesión</button>
+                </li>
+              </ul>
+            )}
+          </section>
+        )}
+
+        {currentUser.userId === null && (
+          <Link
+            href="/login"
+            className="p-2 rounded-lg hover:bg-[hsl(220,15%,20%)]"
           >
-            <span className="font-satoshi-bold text-sm">
-              {!currentUser ? "U" : currentUser?.name.charAt(0).toUpperCase()}
-            </span>
-          </p>
-
-          {isProfileMenuOpen && (
-            <ul className="absolute flex flex-col gap-1 right-0 top-10 w-48 bg-[hsl(220,15%,20%)] rounded-lg shadow-xl py-2">
-              <li className="w-full px-4 cursor-pointer py-2  text-sm font-satoshi-medium text-gray-300 font-semibold hover:bg-[hsl(220,15%,25%)]">
-                <Link href="/profile" className="">
-                  Perfil
-                </Link>
-              </li>
-
-              <li className="w-full px-4 cursor-pointer py-2  text-sm font-satoshi-medium text-gray-300 font-semibold hover:bg-[hsl(220,15%,25%)]">
-                <Link href="/settings" className="">
-                  Configuración
-                </Link>
-              </li>
-
-              <li className="w-full px-4  py-2  text-sm cursor-pointer text-red-400 hover:bg-red-500/10 text-left font-semibold ">
-                <button onClick={() => logoutAction()}>Cerrar sesión</button>
-              </li>
-            </ul>
-          )}
-        </section>
+            Iniciar Sesión
+          </Link>
+        )}
       </section>
 
       {/* Menú móvil */}

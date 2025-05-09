@@ -89,14 +89,10 @@ export interface Roi {
 
 export default function Dashboard() {
   const [currency, setCurrency] = useState("USD");
-  // --- TIPO CORREGIDO: favorites debe usar string[] si el ID de crypto es string ---
   const [favorites, setFavorites] = useState<string[]>([]);
-  // --- Fin Tipo Corregido ---
 
-  // --- useQuery para la lista de monedas (/coins/markets) ---
-  // data tipada como array de CryptoData. Asumimos que fetchCoinMarket devuelve el array directamente.
   const {
-    data: cryptoListData, // Renombrado para claridad (lista de monedas)
+    data: cryptoListData,
     isLoading: isLoadingList,
     error: cryptoListError,
   } = useQuery<CryptoData[]>({
@@ -106,14 +102,8 @@ export default function Dashboard() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  // --- Fin useQuery Lista ---
-
-  // --- useQuery para datos históricos (/coins/{id}/market_chart) ---
-  // data tipada como CoinMarketHistoryResponse
-  // Esta query fetchea datos para un gráfico ESPECÍFICO (Bitcoin, 1 día)
-  // En una implementación real de dashboard, cada widget de gráfico tendría su propia query
   const {
-    data: cryptoHistoryData, // Renombrado para claridad (data histórica)
+    data: cryptoHistoryData,
     isLoading: isLoadingHistory,
     error: cryptoHistoryError,
   } = useQuery<CoinMarketHistoryResponse>({
@@ -251,7 +241,7 @@ export default function Dashboard() {
   // --- Fin Preparación de Datos y Opciones para el Gráfico ---
 
   return (
-    <div className="max-w-7xl mx-auto   py-8">
+    <div className="max-w-7xl mx-auto px-3   py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sección Principal */}
         <div className="lg:col-span-2 space-y-8">
@@ -275,57 +265,86 @@ export default function Dashboard() {
           {/* Tabla de Criptomonedas */}
           {/* Asegúrate de que cryptoListData existe y no hay error */}
           {cryptoListData && cryptoListData.length > 0 && (
-            <table className=" bg-[hsl(220,15%,20%)] rounded-xl overflow-hidden w-full">
-              <thead className="border-b border-[hsl(220,15%,25%)]">
-                <tr>
-                  <th className="text-left py-4 px-6 ">#</th>
-                  <th className="text-left py-4 px-6 ">Nombre</th>
-                  <th className="text-right py-4 px-6 ">Precio</th>
-                  <th className="text-right py-4 px-6 ">Market Cap</th>
-                  <th className=" py-4 "></th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Mapeo CORREGIDO para la tabla (usa cryptoListData) */}
-                {cryptoListData.map((crypto: CryptoData) => (
-                  <tr
-                    key={crypto.id} // ID es string
-                    className="hover:bg-[hsl(220,15%,25%)] transition-colors"
-                  >
-                    <td className="py-4 px-6">{crypto.market_cap_rank}</td>
-                    <td className="py-4 px-6">
-                      {crypto.name} ({crypto.symbol.toUpperCase()})
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      {new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD", // Usar USD para el precio actual según el fetch
-                      }).format(crypto.current_price)}
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <button
-                        onClick={() =>
-                          setFavorites(
-                            (prev) =>
-                              prev.includes(crypto.id) // Usar ID string directamente
-                                ? prev.filter((id) => id !== crypto.id) // Filtrar por ID string
-                                : [...prev, crypto.id] // Añadir ID string
-                          )
-                        }
-                        className="text-[hsl(250,70%,60%)] hover:text-[hsl(250,70%,50%)]"
-                      >
-                        <Star
-                          className={`w-5 h-5 ${
-                            favorites.includes(crypto.id) && // Comparar con ID string
-                            "fill-current"
-                          }`}
-                        />
-                      </button>
-                    </td>
+            <div className="overflow-x-auto">
+              {" "}
+              {/* Contenedor para scroll horizontal en móviles */}
+              <table className="bg-[hsl(220,15%,20%)] rounded-xl w-full min-w-[600px]">
+                <thead className="border-b border-[hsl(220,15%,25%)]">
+                  <tr>
+                    <th className="text-left py-3 px-4 md:px-6">#</th>
+                    <th className="text-left py-3 px-4 md:px-6">Nombre</th>
+                    <th className="text-right py-3 px-4 md:px-6">Precio</th>
+                    <th className="text-right py-3 px-4 md:px-6 hidden sm:table-cell">
+                      Market Cap
+                    </th>
+                    <th className="py-3 px-4 md:px-6"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cryptoListData.map((crypto: CryptoData) => (
+                    <tr
+                      key={crypto.id}
+                      className="hover:bg-[hsl(220,15%,25%)] transition-colors"
+                    >
+                      <td className="py-4 px-4 md:px-6">
+                        {crypto.market_cap_rank}
+                      </td>
+                      <td className="py-4 px-4 md:px-6">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={crypto.image}
+                            alt={crypto.name}
+                            className="w-6 h-6 hidden xs:block"
+                          />
+                          <div>
+                            <div className="font-medium">{crypto.name}</div>
+                            <div className="text-sm text-gray-400 xs:hidden">
+                              {crypto.symbol.toUpperCase()}
+                            </div>
+                          </div>
+                          <span className="hidden xs:inline text-gray-400 ml-1">
+                            ({crypto.symbol.toUpperCase()})
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 md:px-6 text-right">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(crypto.current_price)}
+                      </td>
+                      <td className="py-4 px-4 md:px-6 text-right hidden sm:table-cell">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                          maximumFractionDigits: 0,
+                        }).format(crypto.market_cap)}
+                      </td>
+                      <td className="py-4 px-4 md:px-6">
+                        <button
+                          onClick={() =>
+                            setFavorites((prev) =>
+                              prev.includes(crypto.id)
+                                ? prev.filter((id) => id !== crypto.id)
+                                : [...prev, crypto.id]
+                            )
+                          }
+                          className="block mx-auto"
+                        >
+                          <Star
+                            className={`w-5 h-5 ${
+                              favorites.includes(crypto.id)
+                                ? "text-[hsl(250,70%,60%)] fill-current"
+                                : "text-gray-400"
+                            }`}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
