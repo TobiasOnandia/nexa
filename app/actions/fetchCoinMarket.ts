@@ -7,8 +7,7 @@ if (!COINGECKO_API_KEY) {
 }
 
 export async function fetchCoinMarket() {
-  const url =
-    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&ids=bitcoin";
+  const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD";
 
   try {
     const response = await fetch(url, {

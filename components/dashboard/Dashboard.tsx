@@ -281,9 +281,8 @@ export default function Dashboard() {
                   <th className="text-left py-4 px-6 ">#</th>
                   <th className="text-left py-4 px-6 ">Nombre</th>
                   <th className="text-right py-4 px-6 ">Precio</th>
-                  <th className="text-right py-4 px-6 ">24h %</th>
                   <th className="text-right py-4 px-6 ">Market Cap</th>
-                  <th className="text-right py-4 px-6"></th>
+                  <th className=" py-4 "></th>
                 </tr>
               </thead>
               <tbody>
@@ -327,8 +326,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
-          )}{" "}
-          {/* Fin Tabla */}
+          )}
         </div>
 
         {/* Sidebar */}
