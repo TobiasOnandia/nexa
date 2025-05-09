@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${sathoshi.variable} antialiased bg-[hsl(220,15%,12%)] w-screen h-screen`}
+        className={`${sathoshi.variable} antialiased bg-[hsl(220,15%,12%)] `}
       >
         {children}
       </body>

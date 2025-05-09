@@ -13,7 +13,6 @@ export default function Header() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Efecto para cerrar el menú al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -102,7 +101,7 @@ export default function Header() {
             className="w-9 h-9 rounded-full bg-[hsl(250,70%,60%)] flex items-center justify-center cursor-pointer hover:bg-[hsl(250,70%,50%)] transition-colors"
           >
             <span className="font-satoshi-bold text-sm">
-              {currentUser?.name.charAt(0).toUpperCase()}
+              {!currentUser ? "U" : currentUser?.name.charAt(0).toUpperCase()}
             </span>
           </p>
 
